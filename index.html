@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的第一個動態網站</title>
+    <style>
+        /* 這裡的程式碼用來控制頁面隱藏與顯示 */
+        .page {
+            display: none;
+            width: 100%;
+            height: 100vh; /* vh 是 Viewport Height 的縮寫，讓頁面佔滿整個視窗 */
+            border: 0;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="page-container">
+        <iframe class="page active" id="page1" src="https://openprocessing.org/sketch/1217411/embed/"></iframe>
+        
+        <iframe class="page" id="page2" src="https://openprocessing.org/sketch/2678105/embed/"></iframe>
+        
+        <iframe class="page" id="page3" src="https://openprocessing.org/sketch/你的第三個頁面ID/embed/"></iframe>
+        
+        </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // 在這裡貼上你從 Firebase 專案複製的設定程式碼
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-v1l71191TBGUz9e6VAzx0JLIMXriW7E",
+            authDomain: "webtest-52f24.firebaseapp.com",
+            databaseURL: "https://webtest-52f24-default-rtdb.firebaseio.com",
+            projectId: "webtest-52f24",
+            storageBucket: "webtest-52f24.firebasestorage.app",
+            messagingSenderId: "162281112976",
+            appId: "1:162281112976:web:e045be075e879d55629f15",
+            measurementId: "G-J2EN7TBBHS"
+        };
+        
+        // 初始化 Firebase，讓它開始運作
+        firebase.initializeApp(firebaseConfig);
+        
+        // 準備好資料庫連線
+        const database = firebase.database();
+        const pageRef = database.ref('currentPage');
+        
+        // 當 Firebase 的 currentPage 資料改變時，自動執行以下程式碼
+        pageRef.on('value', (snapshot) => {
+            const currentPageId = snapshot.val();
+        
+            if (currentPageId) {
+                // 先找到所有的頁面 iframe
+                const pages = document.querySelectorAll('.page');
+        
+                // 把所有頁面都隱藏起來
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                });
+        
+                // 找到 Firebase 說要顯示的頁面，把它顯示出來
+                const activePage = document.getElementById(currentPageId);
+                if (activePage) {
+                    activePage.classList.add('active');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
