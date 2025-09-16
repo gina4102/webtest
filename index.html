@@ -3,34 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的第一個動態網站</title>
+    <title>新聞事件動態視覺化</title>
     <style>
-        /* 這裡的程式碼用來控制頁面隱藏與顯示 */
-        .page {
-            display: none;
-            width: 100%;
-            height: 100vh; /* vh 是 Viewport Height 的縮寫，讓頁面佔滿整個視窗 */
-            border: 0;
-        }
-        .active {
-            display: block;
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            touch-action: none;
         }
     </style>
 </head>
 <body>
-    <div id="page-container">
-        <iframe class="page active" id="page1" src="https://openprocessing.org/sketch/1217411/embed/?fullscreen=true"></iframe>
-        
-        <iframe class="page" id="page2" src="https://openprocessing.org/sketch/1251077/?fullscreen=true"></iframe>
-        
-        <iframe class="page" id="page3" src="https://openprocessing.org/sketch/528506/embed/"></iframe>
-        
-        </div>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
     <script>
+        // 這是你的第一個 CodePen 專案 (車禍事件)
+        const sketch1 = function(p) {
+            let words = "砂石車追撞、機車車頭嚴重變形、42 歲婦人、斷魂輪下、驚險一瞬間、當場沒了生命跡象、未婚、女強人、獨留年邁父親、白髮人送黑髮人";
+            let wordList = [];
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textSize(30);
+                p.textAlign(p.CENTER, p.CENTER);
+                let tempWords = words.split('、');
+                for (let i = 0; i < tempWords.length; i++) {
+                    wordList.push({
+                        text: tempWords[i],
+                        x: p.width / 2,
+                        y: p.height / 2,
+                        vx: p.random(-3, 3),
+                        vy: p.random(-3, 3)
+                    });
+                }
+            };
+            p.draw = function() {
+                p.background(255);
+                for (let i = 0; i < wordList.length; i++) {
+                    let word = wordList[i];
+                    word.x += word.vx;
+                    word.y += word.vy;
+                    if (word.x < 0 || word.x > p.width) { word.vx *= -1; }
+                    if (word.y < 0 || word.y > p.height) { word.vy *= -1; }
+                    p.fill(0);
+                    p.text(word.text, word.x, word.y);
+                }
+            };
+            p.mouseClicked = function() {
+                for (let i = 0; i < wordList.length; i++) {
+                    let word = wordList[i];
+                    word.x = p.width / 2;
+                    word.y = p.height / 2;
+                    word.vx = p.random(-5, 5);
+                    word.vy = p.random(-5, 5);
+                }
+            };
+        };
+        
+        // 直接運行第一個畫面
+        new p5(sketch1);
+    </script>
+        // 這是你的第二個 CodePen 專案 (遊覽車大火)
+        const sketch2 = function(p) {
+            let words = "喪生無情烈火、遊覽車大火吞噬幼稚園孩童、老師捨命犧牲、懷裡緊抱孩、火棺材、無一幸免、逃生門、司機過勞、萬念俱灰";
+            let wordList = [];
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textSize(30);
+                p.textAlign(p.CENTER, p.CENTER);
+                let tempWords = words.split('、');
+                for (let i = 0; i < tempWords.length; i++) {
+                    wordList.push({
+                        text: tempWords[i],
+                        x: p.width / 2,
+                        y: p.height / 2,
+                        vx: p.random(-3, 3),
+                        vy: p.random(-3, 3)
+                    });
+                }
+            };
+            p.draw = function() {
+                p.background(0);
+                for (let i = 0; i < wordList.length; i++) {
+                    let word = wordList[i];
+                    word.x += word.vx;
+                    word.y += word.vy;
+                    if (word.x < 0 || word.x > p.width) { word.vx *= -1; }
+                    if (word.y < 0 || word.y > p.height) { word.vy *= -1; }
+                    p.fill(255);
+                    p.text(word.text, word.x, word.y);
+                }
+            };
+            p.mouseClicked = function() {
+                for (let i = 0; i < wordList.length; i++) {
+                    let word = wordList[i];
+                    word.x = p.width / 2;
+                    word.y = p.height / 2;
+                    word.vx = p.random(-5, 5);
+                    word.vy = p.random(-5, 5);
+                }
+            };
+        };
+
+        // ...你的 Firebase 設定...
+        
+        // 這裡是你原本的程式碼，請在這裡新增
+        const database = firebase.database();
+        const pageRef = database.ref('currentPage');
+        let currentSketch = null;
+        
+        pageRef.on('value', (snapshot) => {
+            const pageId = snapshot.val();
+            if (currentSketch) {
+                currentSketch.remove();
+            }
+            if (pageId === "page1") {
+                currentSketch = new p5(sketch1);
+            } else if (pageId === "page2") {
+                currentSketch = new p5(sketch2);
+            }
+        });
+    </script>
+</body>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+ <script>
+        // 你的 CodePen 程式碼都在這裡...
+        // ...
+        
         // 在這裡貼上你從 Firebase 專案複製的設定程式碼
         const firebaseConfig = {
             apiKey: "AIzaSyA-v1l71191TBGUz9e6VAzx0JLIMXriW7E",
@@ -42,34 +142,23 @@
             appId: "1:162281112976:web:e045be075e879d55629f15",
             measurementId: "G-J2EN7TBBHS"
         };
-        
-        // 初始化 Firebase，讓它開始運作
         firebase.initializeApp(firebaseConfig);
         
-        // 準備好資料庫連線
         const database = firebase.database();
         const pageRef = database.ref('currentPage');
-        
-        // 當 Firebase 的 currentPage 資料改變時，自動執行以下程式碼
+        let currentSketch = null;
+
+        // 當 Firebase 的 currentPage 資料改變時，自動切換顯示的畫布
         pageRef.on('value', (snapshot) => {
-            const currentPageId = snapshot.val();
-        
-            if (currentPageId) {
-                // 先找到所有的頁面 iframe
-                const pages = document.querySelectorAll('.page');
-        
-                // 把所有頁面都隱藏起來
-                pages.forEach(page => {
-                    page.classList.remove('active');
-                });
-        
-                // 找到 Firebase 說要顯示的頁面，把它顯示出來
-                const activePage = document.getElementById(currentPageId);
-                if (activePage) {
-                    activePage.classList.add('active');
-                }
+            const pageId = snapshot.val();
+            if (currentSketch) {
+                currentSketch.remove();
+            }
+            if (pageId === "page1") {
+                currentSketch = new p5(sketch1);
+            } else if (pageId === "page2") {
+                currentSketch = new p5(sketch2);
             }
         });
     </script>
-</body>
 </html>
