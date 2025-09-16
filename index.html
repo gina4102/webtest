@@ -14,8 +14,28 @@
     </style>
 </head>
 <body>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+
     <script>
+        // 你的 Firebase 設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-v1l71191TBGUz9e6VAzx0JLIMXriW7E",
+            authDomain: "webtest-52f24.firebaseapp.com",
+            databaseURL: "https://webtest-52f24-default-rtdb.firebaseio.com",
+            projectId: "webtest-52f24",
+            storageBucket: "webtest-52f24.firebasestorage.app",
+            messagingSenderId: "162281112976",
+            appId: "1:162281112976:web:e045be075e879d55629f15",
+            measurementId: "G-J2EN7TBBHS"
+        };
+        firebase.initializeApp(firebaseConfig);
+        
+        const database = firebase.database();
+        const pageRef = database.ref('currentPage');
+        let currentSketch = null;
+
         // 這是你的第一個 CodePen 專案 (車禍事件)
         const sketch1 = function(p) {
             let words = "砂石車追撞、機車車頭嚴重變形、42 歲婦人、斷魂輪下、驚險一瞬間、當場沒了生命跡象、未婚、女強人、獨留年邁父親、白髮人送黑髮人";
@@ -58,10 +78,7 @@
                 }
             };
         };
-        
-        // 直接運行第一個畫面
-        new p5(sketch1);
-    </script>
+
         // 這是你的第二個 CodePen 專案 (遊覽車大火)
         const sketch2 = function(p) {
             let words = "喪生無情烈火、遊覽車大火吞噬幼稚園孩童、老師捨命犧牲、懷裡緊抱孩、火棺材、無一幸免、逃生門、司機過勞、萬念俱灰";
@@ -105,15 +122,10 @@
             };
         };
 
-        // ...你的 Firebase 設定...
-        
-        // 這裡是你原本的程式碼，請在這裡新增
-        const database = firebase.database();
-        const pageRef = database.ref('currentPage');
-        let currentSketch = null;
-        
+        // 這是我們控制頁面切換的程式碼
         pageRef.on('value', (snapshot) => {
             const pageId = snapshot.val();
+            // 先移除舊的畫布，確保畫面乾淨
             if (currentSketch) {
                 currentSketch.remove();
             }
@@ -125,40 +137,4 @@
         });
     </script>
 </body>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
- <script>
-        // 你的 CodePen 程式碼都在這裡...
-        // ...
-        
-        // 在這裡貼上你從 Firebase 專案複製的設定程式碼
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-v1l71191TBGUz9e6VAzx0JLIMXriW7E",
-            authDomain: "webtest-52f24.firebaseapp.com",
-            databaseURL: "https://webtest-52f24-default-rtdb.firebaseio.com",
-            projectId: "webtest-52f24",
-            storageBucket: "webtest-52f24.firebasestorage.app",
-            messagingSenderId: "162281112976",
-            appId: "1:162281112976:web:e045be075e879d55629f15",
-            measurementId: "G-J2EN7TBBHS"
-        };
-        firebase.initializeApp(firebaseConfig);
-        
-        const database = firebase.database();
-        const pageRef = database.ref('currentPage');
-        let currentSketch = null;
-
-        // 當 Firebase 的 currentPage 資料改變時，自動切換顯示的畫布
-        pageRef.on('value', (snapshot) => {
-            const pageId = snapshot.val();
-            if (currentSketch) {
-                currentSketch.remove();
-            }
-            if (pageId === "page1") {
-                currentSketch = new p5(sketch1);
-            } else if (pageId === "page2") {
-                currentSketch = new p5(sketch2);
-            }
-        });
-    </script>
 </html>
